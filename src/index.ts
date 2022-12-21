@@ -25,8 +25,45 @@ app.use("/test", (req, res) => {
 
 db.connectWithRetry(mongodbURI);
 
-//start the server
+//Express Validator
+// app.use(
+//   expressValidator({
+//     errorFormatter: function (param, msg, value) {
+//       var namespace = param.split("."),
+//         root = namespace.shift(),
+//         formParam = root;
 
+//       while (namespace.length) {
+//         formParam += "[" + namespace.shift() + "]";
+//       }
+//       return {
+//         param: formParam,
+//         msg: msg,
+//         value: value,
+//       };
+//     },
+//   })
+// );
+
+//allow requests from any host
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, Authorization, X-Requested-With, Content-Type, Accept"
+  );
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  next();
+});
+
+app.use("/test", (req, res) => {
+  res.send(config.serviceName + " is LIVE");
+});
+
+//Route Access
+app.use("/v1", require("./routes/index"));
+
+//start the server
 server.listen(port, () => {
   console.log(LABEL + "is runnning on port " + port);
 });

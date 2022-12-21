@@ -8,8 +8,9 @@ export let schema = new Schema({}, { strict: false, versionKey: false });
 //CRUD operations
 
 //====Add api====//
-export var add: any = (collectionName: string, data: any) => {
+export var add = (collectionName: string, data: any) => {
   let startDate: any = new Date();
+  data["createdAt"] = startDate;
   if (data && data.length) {
     data = [data];
   }
@@ -17,47 +18,37 @@ export var add: any = (collectionName: string, data: any) => {
 };
 
 //=====Get api====//
-export var getData: any = (
+export var getData = (
   collectionName: string,
   query: any,
   projection: any,
-  options: any,
-  callback: Function
+  options: any
 ) => {
   return getCollectionObject(collectionName, schema).find(
     query,
     projection,
-    options,
-    (err, data) => {
-      callback(err, data);
-    }
+    options
   );
 };
 
 //======findOne api=====//
-export var GetfindOne = (
-  collectionName: string,
-  id: string,
-  callback: Function
-) => {
-  return getCollectionObject(collectionName, schema).findById(
-    id,
-    function (err, data) {
-      callback(err, data);
-    }
-  );
+export var GetfindOne = (collectionName: string, id: string) => {
+  return getCollectionObject(collectionName, schema).findById({ _id: id });
 };
 
 //=====update api======//
-export var updateData = (collectionName: string, id: string, data: JSON) => {
+export var updateData = (collectionName: string, id: string, data: any) => {
+  console.log("data", data, id, collectionName);
+  let startDate: any = new Date();
+  data["updatedAt"] = startDate;
   return getCollectionObject(collectionName, schema).updateOne(
     { _id: id },
     { $set: data },
-    { upsert: false }
+    { upsert: true }
   );
 };
 
 //======delete api=====//
 export var deleteData = (collectionName: string, id: string) => {
-  return getCollectionObject(collectionName, schema).delete({ _id: id });
+  return getCollectionObject(collectionName, schema).deleteOne({ _id: id });
 };
